@@ -1,0 +1,147 @@
+{% extends 'boiler.html' %}
+{% block title %}Guess The Movie{% endblock %}
+
+{% block body %}
+<div class="container bg-danger">
+    <div class="row row-content">
+        <div class="col-12 col-md-12 text-center">
+            <h2><u>GAME BEGINS</u></h2>
+            <small><b>--Play till you are tired--</b></small>
+        </div>
+        <div class="col-12 col-md-12 mt-2">
+          <span>
+            <h4 class="float-left">Chances Left: <span id="chance"></span></h4>
+          </span>
+          <span>
+            <h4 class="float-right">Points: <span id="points"></span></h4>
+          </span>
+        </div>
+        <div class="col-12 col-md-12 text-center bg-warning">
+          <div class="row row-content">
+            <div class="col-12">
+              <h3 id="ques"></h3>
+            </div>
+            <div class="col-12" id="next_btn">
+              
+            </div>
+
+          </div>
+            
+        </div>
+        <div class="col-12 col-md-12 text-center mt-2">
+            <form method="post" action="{% url 'gamebegins' %}"> {% csrf_token %}
+                <div class="row">
+                  <div class="col-12  col-md-10 mt-2">
+                    <input type="text" class="form-control" placeholder="Guess The Movie">
+                  </div>
+                  <div class="col-12 col-md-2 mt-2">
+                    <button type="submit" class="btn btn-primary"><b>Submit</b></button>
+                  </div>
+                </div>
+              </form>
+              <div class="row">
+                <div class="col-12 col-md-10 mt-2">
+                  <input type="text" class="form-control" id="letter" name="letter" placeholder="Guess The Letter">
+                </div>
+                <div class="col-12 col-md-2 mt-2">
+                  <button onclick="checkLetter()" type="submit" class="btn btn-primary"><b>Submit</b></button>
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  function make_ques(movie) {
+    temp=""
+    for (i=0; i < movie.length; i++) {
+      if(movie[i]==" ")
+            temp+=" "
+        else
+            temp+="*"
+    }       
+    return temp
+  }
+
+  function mod_ques(ch,ques,movie) {
+    temp=""
+    for(i=0; i < movie.length; i++) {
+      if (ch==movie[i])
+            temp+=ch
+        else    
+            temp+=ques[i]
+    }        
+    return temp
+  }
+  var mlist = {{ movie_list|safe }};
+
+  var points = 0;
+  var chance = 10;
+
+  var picked_movie = mlist[Math.floor(Math.random()*mlist.length)];
+  picked_movie = picked_movie['movie_name'];
+  mlist.pop(picked_movie);
+  var ques = make_ques(picked_movie);
+  document.getElementById("ques").innerHTML = ques;
+  document.getElementById("chance").innerHTML = chance;
+  document.getElementById("points").innerHTML = points;
+  
+  function nextMovie() {
+    chance = 10;
+    document.getElementById("nextMovie-btn").remove();
+    picked_movie = mlist[Math.floor(Math.random()*mlist.length)];
+    picked_movie = picked_movie['movie_name'];
+    ques = make_ques(picked_movie);
+    document.getElementById("ques").innerHTML = ques;
+    document.getElementById("chance").innerHTML = chance;
+    document.getElementById("points").innerHTML = points;
+  }
+
+  function playAgain() {
+    points = 0;
+    chance = 10;
+    document.getElementById("playAgain-btn").remove();
+    picked_movie = mlist[Math.floor(Math.random()*mlist.length)];
+    picked_movie = picked_movie['movie_name'];
+    ques = make_ques(picked_movie);
+    document.getElementById("ques").innerHTML = ques;
+    document.getElementById("chance").innerHTML = chance;
+    document.getElementById("points").innerHTML = points;
+  }
+
+  function checkLetter() {
+    var ch = document.getElementById("letter").value;
+    ch = ch.toUpperCase();
+    
+    if(picked_movie.includes(ch)) {
+      ques = mod_ques(ch, ques, picked_movie)
+      if (ques.includes("*")) {
+        document.getElementById("ques").innerHTML = ques;
+        document.getElementById("letter").value = "";
+      }
+      else {
+        ques = "Correct Answer!";
+        document.getElementById("ques").innerHTML = ques;
+        document.getElementById("letter").value = "";
+        mystr =  '<button type="submit" class="btn btn-success" id="nextMovie-btn" onclick="nextMovie()"><b>Next</b></button><button type="submit" class="btn btn-success" id="nextMovie-btn" onclick="nextMovie()"><b>Exit Game</b></button>';
+        $('#next_btn').append(mystr);
+        points += 1;
+        document.getElementById("points").innerHTML = points;
+      }
+    }
+    else {
+      chance -= 1;
+      if(chance == 0){
+        ques = "Better luck next time";
+        document.getElementById("ques").innerHTML = ques;
+        mystr =  '<button type="submit" class="btn btn-danger" id="playAgain-btn" onclick="playAgain()"><b>Play Again</b></button>';
+        $('#next_btn').append(mystr);
+      }
+      document.getElementById("chance").innerHTML = chance;
+      document.getElementById("letter").value = "";
+    }   
+  }
+</script>
+{% endblock %}
