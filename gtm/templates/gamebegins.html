@@ -22,23 +22,20 @@
               <h3 id="ques"></h3>
             </div>
             <div class="col-12" id="next_btn">
-              
             </div>
 
           </div>
             
         </div>
         <div class="col-12 col-md-12 text-center mt-2">
-            <form method="post" action="{% url 'gamebegins' %}"> {% csrf_token %}
                 <div class="row">
                   <div class="col-12  col-md-10 mt-2">
-                    <input type="text" class="form-control" placeholder="Guess The Movie">
+                    <input type="text" class="form-control" id="guess" name="guess" placeholder="Guess The Movie">
                   </div>
                   <div class="col-12 col-md-2 mt-2">
-                    <button type="submit" class="btn btn-primary"><b>Submit</b></button>
+                    <button onclick="checkMovie()" type="submit" class="btn btn-primary"><b>Submit</b></button>
                   </div>
                 </div>
-              </form>
               <div class="row">
                 <div class="col-12 col-md-10 mt-2">
                   <input type="text" class="form-control" id="letter" name="letter" placeholder="Guess The Letter">
@@ -75,6 +72,7 @@
     }        
     return temp
   }
+  
   var mlist = {{ movie_list|safe }};
 
   var points = 0;
@@ -91,6 +89,8 @@
   function nextMovie() {
     chance = 10;
     document.getElementById("nextMovie-btn").remove();
+    document.getElementById("exitGame-btn").remove();
+    document.getElementById("stored_point").remove();
     picked_movie = mlist[Math.floor(Math.random()*mlist.length)];
     picked_movie = picked_movie['movie_name'];
     ques = make_ques(picked_movie);
@@ -111,6 +111,42 @@
     document.getElementById("points").innerHTML = points;
   }
 
+  function checkMovie() {
+    var guess = document.getElementById("guess").value;
+    guess = guess.toUpperCase();
+
+    if(guess == picked_movie) {
+      document.getElementById("guess").value = "";
+      ques = "Correct Answer!";
+      document.getElementById("ques").innerHTML = ques;
+      mystr =  `<button type="submit" class="btn btn-success" id="nextMovie-btn" onclick="nextMovie()"><b>Next</b></button>
+                  <form  method="post" action="{% url 'leaderboards' %}"> {% csrf_token %}
+                    <input type="hidden" name="stored_point" id="stored_point">
+                    <button type="submit" class="btn btn-success mt-2" id="exitGame-btn"><b>Exit Game</b></button>
+                  </form>`;
+        $('#next_btn').append(mystr);
+        points += 1;
+        document.getElementById("points").innerHTML = points;
+        document.getElementById('stored_point').value = points;
+    }
+    else {
+      chance -= 1;
+      if(chance == 0){
+        ques = "Better luck next time";
+        document.getElementById("ques").innerHTML = ques;
+        mystr = `<button type="submit" class="btn btn-danger" id="playAgain-btn" onclick="playAgain()"><b>Play Again</b></button>
+                  <form  method="post" action="{% url 'leaderboards' %}"> {% csrf_token %}
+                    <input type="hidden" name="stored_point" id="stored_point">
+                    <button type="submit" class="btn btn-success mt-2" id="exitGame-btn"><b>Exit Game</b></button>
+                  </form>`;
+        $('#next_btn').append(mystr);
+      }
+      document.getElementById("chance").innerHTML = chance;
+      document.getElementById("guess").value = "";
+      document.getElementById('stored_point').value = points;
+    }
+  }
+
   function checkLetter() {
     var ch = document.getElementById("letter").value;
     ch = ch.toUpperCase();
@@ -125,10 +161,15 @@
         ques = "Correct Answer!";
         document.getElementById("ques").innerHTML = ques;
         document.getElementById("letter").value = "";
-        mystr =  '<button type="submit" class="btn btn-success" id="nextMovie-btn" onclick="nextMovie()"><b>Next</b></button><button type="submit" class="btn btn-success" id="nextMovie-btn" onclick="nextMovie()"><b>Exit Game</b></button>';
+        mystr =  `<button type="submit" class="btn btn-success" id="nextMovie-btn" onclick="nextMovie()"><b>Next</b></button>
+                  <form  method="post" action="{% url 'leaderboards' %}"> {% csrf_token %}
+                    <input type="hidden" name="stored_point" id="stored_point">
+                    <button type="submit" class="btn btn-success mt-2" id="exitGame-btn"><b>Exit Game</b></button>
+                  </form>`;
         $('#next_btn').append(mystr);
         points += 1;
         document.getElementById("points").innerHTML = points;
+        document.getElementById('stored_point').value = points;
       }
     }
     else {
@@ -136,11 +177,16 @@
       if(chance == 0){
         ques = "Better luck next time";
         document.getElementById("ques").innerHTML = ques;
-        mystr =  '<button type="submit" class="btn btn-danger" id="playAgain-btn" onclick="playAgain()"><b>Play Again</b></button>';
+        mystr = `<button type="submit" class="btn btn-danger" id="playAgain-btn" onclick="playAgain()"><b>Play Again</b></button>
+                  <form  method="post" action="{% url 'leaderboards' %}"> {% csrf_token %}
+                    <input type="hidden" name="stored_point" id="stored_point">
+                    <button type="submit" class="btn btn-success mt-2" id="exitGame-btn"><b>Exit Game</b></button>
+                  </form>`;
         $('#next_btn').append(mystr);
       }
       document.getElementById("chance").innerHTML = chance;
       document.getElementById("letter").value = "";
+      document.getElementById('stored_point').value = points;
     }   
   }
 </script>

@@ -4,9 +4,9 @@ from django.db import models
 class Movie(models.Model):
     movie_id = models.AutoField
     movie_name = models.CharField(max_length=50)
-    hint1 = models.CharField(max_length=50)
-    hint2 = models.CharField(max_length=50)
-    hint3 = models.CharField(max_length=50)
+    hint1 = models.CharField(max_length=500)
+    hint2 = models.CharField(max_length=500)
+    hint3 = models.CharField(max_length=500)
 
     def __str__(self):
         return self.movie_name

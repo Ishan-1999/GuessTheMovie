@@ -13,7 +13,23 @@ def game(request):
     return render(request, 'game.html')
 
 
+def leaderboards(request):
+    global pName
+    if request.method == 'POST':
+        points = request.POST.get('stored_point', '')
+
+        record = Leaderboard(player_name=pName ,points=points)
+        record.save()
+    
+    records = Leaderboard.objects.all()
+    return render(request, 'leaderboards.html', {'records': records})
+
+
+pName = ''
+
+
 def gameBegins(request):
+    global pName
     pName = request.POST.get('playerName', '')
     Movies = Movie.objects.values('movie_name')
     marray = []

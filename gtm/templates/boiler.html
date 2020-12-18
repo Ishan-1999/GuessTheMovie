@@ -17,6 +17,7 @@
     {% load static %}
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="/">GuessTheMovie</a>
+        <a href="{% url 'leaderboards' %}"><button class="btn btn-warning"><b style="color: white;">Leaderboards</b></button> </a>
       </nav>
     {% block body %}  {% endblock %}
     <!-- Optional JavaScript; choose one of the two! -->
