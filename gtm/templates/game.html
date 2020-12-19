@@ -8,7 +8,7 @@
             <form method="post" action="{% url 'gamebegins' %}"> {% csrf_token %}
                 <div class="form-group">
                     <h3>Enter Your Name:</h3>
-                  <input type="text" class="form-control" id="playerName" name="playerName">
+                  <input type="text" class="form-control" id="playerName" name="playerName" autocomplete="off">
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
               </form>

@@ -2,7 +2,7 @@
 {% block title %}Guess The Movie{% endblock %}
 
 {% block body %}
-<div class="container bg-danger">
+<div class="container-fluid bg-danger" id="container">
     <div class="row row-content">
         <div class="col-12 col-md-12 text-center">
             <h2><u>GAME BEGINS</u></h2>
@@ -16,10 +16,17 @@
             <h4 class="float-right">Points: <span id="points"></span></h4>
           </span>
         </div>
-        <div class="col-12 col-md-12 text-center bg-warning">
+        <div class="col-12 col-md-12 text-center bg-warning" style="height: 200px;">
           <div class="row row-content">
             <div class="col-12">
-              <h3 id="ques"></h3>
+              <div class="row">
+                <div class="col-12 mb-4">
+                  <h2><b>Hollywood</b></h2>
+                </div>
+                <div class="col-12">
+                  <h3 id="ques"></h3>
+                </div>
+              </div>
             </div>
             <div class="col-12" id="next_btn">
             </div>
@@ -27,18 +34,18 @@
           </div>
             
         </div>
-        <div class="col-12 col-md-12 text-center mt-2">
+        <div class="col-12 col-md-12 text-center mt-5">
                 <div class="row">
-                  <div class="col-12  col-md-10 mt-2">
-                    <input type="text" class="form-control" id="guess" name="guess" placeholder="Guess The Movie">
+                  <div class="col-12  col-md-4 mt-2">
+                    <input type="text" class="form-control" id="guess" name="guess" placeholder="Guess The Movie" 
+                    autocomplete="off">
                   </div>
                   <div class="col-12 col-md-2 mt-2">
                     <button onclick="checkMovie()" type="submit" class="btn btn-primary"><b>Submit</b></button>
                   </div>
-                </div>
-              <div class="row">
-                <div class="col-12 col-md-10 mt-2">
-                  <input type="text" class="form-control" id="letter" name="letter" placeholder="Guess The Letter">
+                <div class="col-12 col-md-4 mt-2">
+                  <input type="text" class="form-control" id="letter" name="letter" placeholder="Guess The Letter"
+                  autocomplete="off">
                 </div>
                 <div class="col-12 col-md-2 mt-2">
                   <button onclick="checkLetter()" type="submit" class="btn btn-primary"><b>Submit</b></button>
@@ -51,6 +58,9 @@
 
 {% block js %}
 <script>
+  var height = $(window).height();
+
+  $("#container").height(height+"px");
   function make_ques(movie) {
     temp=""
     for (i=0; i < movie.length; i++) {
@@ -76,7 +86,7 @@
   var mlist = {{ movie_list|safe }};
 
   var points = 0;
-  var chance = 10;
+  var chance = 5;
 
   var picked_movie = mlist[Math.floor(Math.random()*mlist.length)];
   picked_movie = picked_movie['movie_name'];
